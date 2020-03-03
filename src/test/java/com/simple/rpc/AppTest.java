@@ -1,6 +1,5 @@
 package com.simple.rpc
 
--rpc;
 
 import static org.junit.Assert.assertTrue;
 
