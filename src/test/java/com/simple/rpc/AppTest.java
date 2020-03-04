@@ -1,4 +1,4 @@
-package com.simple.rpc
+package com.simple.rpc;
 
 
 import static org.junit.Assert.assertTrue;

@@ -1,4 +1,4 @@
-package com.simple.rpc.factory;
+package com.simple.rpc.ioc;
 
 public interface BeanFactory {
 
@@ -10,7 +10,6 @@ public interface BeanFactory {
      * @throws Exception
      */
     <T> T getBean(Class<T> requiredType) throws Exception;
-
 
     /**
      * 将bean注入到容器中

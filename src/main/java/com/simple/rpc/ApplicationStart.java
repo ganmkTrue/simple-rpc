@@ -1,7 +1,7 @@
 package com.simple.rpc;
 
-import com.simple.rpc.factory.BeanFactory;
-import com.simple.rpc.factory.DefaultBeanFactory;
+import com.simple.rpc.ioc.BeanFactory;
+import com.simple.rpc.ioc.DefaultBeanFactory;
 
 public class ApplicationStart {
 
