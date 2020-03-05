@@ -2,6 +2,8 @@ package com.simple.rpc.ioc;
 
 import com.simple.rpc.config.annotation.RpcReference;
 import com.simple.rpc.config.annotation.RpcService;
+import com.simple.rpc.proxy.RemoteProxyFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -45,10 +47,6 @@ public class ClassPathRegistry implements Registry {
         List<Class<?>> clazzs = new ArrayList<>();
         while (resourceUrls.hasMoreElements()) {
             URL url = resourceUrls.nextElement();
-            System.out.println(url);
-            File file = new File(url.getFile());
-            System.out.println(file.isDirectory());
-
             addClass(clazzs, url.getPath(), basePackage);
         }
 
@@ -96,34 +94,38 @@ public class ClassPathRegistry implements Registry {
             return;
         }
         beanDefinitionMap.forEach((clazz, beanDefinition) -> {
-            Object instance = null;
-            try {
-                instance = beanDefinition.getClazz().newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
-                //异常
-            }
-
-            beanFactory.registerBean(clazz, instance);
-
+            Object bean = createBean(clazz);
+            beanFactory.registerBean(clazz, bean);
         });
 
     }
 
-    private void setRemoteProxy(Class<?> clazz){
-
-        TypeVariable<? extends Class<?>>[] typeParameters = clazz.getTypeParameters();
-        Field[] fields = clazz.getFields();
-
-        for (Field field: fields){
-            field.setAccessible(true);
-            RpcReference annotation = field.getAnnotation(RpcReference.class);
-            if(annotation!=null){
-               if(!Modifier.isStatic(field.getModifiers())){
-
-               }
+    private Object createBean(Class<?> clazz) {
+        Object bean = null;
+        try {
+            bean = clazz.newInstance();
+            Field[] fields = clazz.getDeclaredFields();
+            for (Field field : fields) {
+                field.setAccessible(true);
+                RpcReference annotation = field.getAnnotation(RpcReference.class);
+                if (annotation != null) {
+                    if (!Modifier.isStatic(field.getModifiers())) {
+                        field.setAccessible(true);
+                        //代理对象
+                        Object proxy = getRemoteProxy(field.getType());
+                        field.set(bean, proxy);
+                    }
+                }
             }
-        }
 
+        } catch (InstantiationException | IllegalAccessException e) {
+            //异常
+        }
+        return bean;
+    }
+
+    private Object getRemoteProxy(Class<?> clazz) {
+        return RemoteProxyFactory.createRemoteProxy(clazz);
     }
 
 }

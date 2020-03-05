@@ -1,21 +1,20 @@
 package com.simple.rpc;
 
 
-import static org.junit.Assert.assertTrue;
 
+import com.simple.rpc.ioc.DefaultBeanFactory;
+import com.simple.rpc.test.ServerBImpl;
 import org.junit.Test;
 
 /**
  * Unit test for simple App.
  */
-public class AppTest 
-{
-    /**
-     * Rigorous Test :-)
-     */
+public class AppTest {
     @Test
-    public void shouldAnswerWithTrue()
-    {
-        assertTrue( true );
+    public void iocTest() {
+        ApplicationStart applicationStart = new ApplicationStart();
+        applicationStart.run(new String[]{"com.simple.rpc"});
+        ServerBImpl bean = DefaultBeanFactory.getInstance().getBean(ServerBImpl.class);
+        bean.say();
     }
 }

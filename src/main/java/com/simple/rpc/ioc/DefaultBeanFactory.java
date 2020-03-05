@@ -4,20 +4,20 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DefaultBeanFactory implements BeanFactory,Registry {
+public class DefaultBeanFactory implements BeanFactory {
 
     private final Map<Class<?>, Object> beanContainer = new ConcurrentHashMap<>(64);
 
-    private Registry registry;
+
 
     public static DefaultBeanFactory getInstance(){ return Holder.instance; }
 
-    public DefaultBeanFactory(){
-        registry = new ClassPathRegistry();
+    private DefaultBeanFactory(){
+
     }
 
     @Override
-    public <T> T getBean(Class<T> requiredType) throws Exception {
+    public <T> T getBean(Class<T> requiredType)  {
         Object bean = beanContainer.get(requiredType);
         if (bean == null){
             //异常
@@ -37,13 +37,4 @@ public class DefaultBeanFactory implements BeanFactory,Registry {
     }
 
 
-    @Override
-    public void register(BeanFactory beanFactory) {
-        registry.register(beanFactory);
-    }
-
-    @Override
-    public void scan(String... basePackages) {
-        registry.scan(basePackages);
-    }
 }

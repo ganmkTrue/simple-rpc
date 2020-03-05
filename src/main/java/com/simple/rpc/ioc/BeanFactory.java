@@ -9,7 +9,7 @@ public interface BeanFactory {
      * @return
      * @throws Exception
      */
-    <T> T getBean(Class<T> requiredType) throws Exception;
+    <T> T getBean(Class<T> requiredType);
 
     /**
      * 将bean注入到容器中

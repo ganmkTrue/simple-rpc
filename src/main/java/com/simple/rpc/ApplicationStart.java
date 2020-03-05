@@ -1,21 +1,30 @@
 package com.simple.rpc;
 
 import com.simple.rpc.ioc.BeanFactory;
+import com.simple.rpc.ioc.ClassPathRegistry;
 import com.simple.rpc.ioc.DefaultBeanFactory;
+import com.simple.rpc.ioc.Registry;
 
 public class ApplicationStart {
 
     private BeanFactory beanFactory;
+    private Registry registry;
 
     public void run() {
         //获取当前启动类的目录
         run(new String[]{""});
     }
 
-    public void run(String[] basePackages) {
+    public ApplicationStart(){
         this.beanFactory = DefaultBeanFactory.getInstance();
-        //server start
-        //scan
+        this.registry = new ClassPathRegistry();
+
+    }
+
+    public void run(String[] basePackages) {
+        //start Server
+        registry.scan(basePackages);
+        registry.register(beanFactory);
     }
 
     private void scan(String[] basePackages) {
