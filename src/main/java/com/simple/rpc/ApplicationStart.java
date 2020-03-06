@@ -1,23 +1,22 @@
 package com.simple.rpc;
 
+import com.simple.rpc.config.ServerConfig;
 import com.simple.rpc.ioc.BeanFactory;
 import com.simple.rpc.ioc.ClassPathRegistry;
 import com.simple.rpc.ioc.DefaultBeanFactory;
-import com.simple.rpc.ioc.Registry;
+import com.simple.rpc.ioc.LocalRegistry;
+import com.simple.rpc.registry.ZooKeeperRegistry;
 
 public class ApplicationStart {
 
     private BeanFactory beanFactory;
-    private Registry registry;
+    private LocalRegistry registry;
 
-    public void run() {
-        //获取当前启动类的目录
-        run(new String[]{""});
-    }
 
-    public ApplicationStart(){
+    public ApplicationStart(ServerConfig serverConfig){
+        ZooKeeperRegistry.init(serverConfig);
         this.beanFactory = DefaultBeanFactory.getInstance();
-        this.registry = new ClassPathRegistry();
+        this.registry = new ClassPathRegistry(ZooKeeperRegistry.instance());
 
     }
 
@@ -25,29 +24,6 @@ public class ApplicationStart {
         //start Server
         registry.scan(basePackages);
         registry.register(beanFactory);
-    }
-
-    private void scan(String[] basePackages) {
-        for (String basePackage : basePackages) {
-            doScan(basePackage);
-        }
-    }
-
-
-    private void doScan(String basePackage) {
-        //register Provider @service ? register
-        registerProvider();
-        //else
-        setRemoteProxy();
-    }
-
-    private void registerProvider() {
-        //init
-        setRemoteProxy();
-    }
-
-    private void setRemoteProxy() {
-
     }
 
 

@@ -5,7 +5,7 @@ package com.simple.rpc.ioc;
  * @date 2020/3/4
  * @description:
  */
-public interface Registry {
+public interface LocalRegistry {
 
     /**
      * 扫描指定包

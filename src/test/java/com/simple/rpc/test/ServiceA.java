@@ -1,6 +1,6 @@
 package com.simple.rpc.test;
 
-public interface ServerA {
+public interface ServiceA {
 
     void say();
 }

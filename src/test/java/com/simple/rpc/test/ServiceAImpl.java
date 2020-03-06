@@ -1,6 +1,10 @@
 package com.simple.rpc.test;
 
-public class ServiceAImpl implements ServerA{
+
+import com.simple.rpc.config.annotation.RpcService;
+
+@RpcService
+public class ServiceAImpl implements ServiceA {
     private String name = "a";
 
     @Override

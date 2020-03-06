@@ -4,11 +4,12 @@ import com.simple.rpc.config.annotation.RpcReference;
 import com.simple.rpc.config.annotation.RpcService;
 import com.simple.rpc.proxy.RemoteProxyFactory;
 
+import com.simple.rpc.registry.RemoteRegistry;
+import com.simple.rpc.registry.ZooKeeperRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.TypeVariable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -21,9 +22,16 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2020/3/4
  * @description:
  */
-public class ClassPathRegistry implements Registry {
+public class ClassPathRegistry implements LocalRegistry {
 
     private final Map<Class<?>, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(64);
+
+    private RemoteRegistry remoteRegistry;
+
+    public ClassPathRegistry(RemoteRegistry remoteRegistry){
+        this.remoteRegistry = remoteRegistry;
+    }
+
 
     @Override
     public void scan(String... basePackages) {
@@ -95,7 +103,16 @@ public class ClassPathRegistry implements Registry {
         }
         beanDefinitionMap.forEach((clazz, beanDefinition) -> {
             Object bean = createBean(clazz);
-            beanFactory.registerBean(clazz, bean);
+            Class<?>[] interfaces = clazz.getInterfaces();
+            if(interfaces==null||interfaces.length == 0){
+                beanFactory.registerBean(clazz, bean);
+                remoteRegistry.registry(clazz);
+            }else {
+                for (Class<?> inter: interfaces){
+                    beanFactory.registerBean(inter, bean);
+                    remoteRegistry.registry(inter);
+                }
+            }
         });
 
     }
@@ -114,6 +131,7 @@ public class ClassPathRegistry implements Registry {
                         //代理对象
                         Object proxy = getRemoteProxy(field.getType());
                         field.set(bean, proxy);
+                        remoteRegistry.subscriberService(field.getType(),clazz);
                     }
                 }
             }

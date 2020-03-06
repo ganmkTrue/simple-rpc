@@ -4,10 +4,10 @@ import com.simple.rpc.config.annotation.RpcReference;
 import com.simple.rpc.config.annotation.RpcService;
 
 @RpcService
-public class ServerBImpl implements ServerB{
+public class ServiceBImpl implements ServiceB {
 
     @RpcReference
-    private ServerA serviceA;
+    private ServiceA serviceA;
 
 
     @Override
