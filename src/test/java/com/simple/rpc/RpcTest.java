@@ -17,7 +17,7 @@ import java.lang.reflect.Method;
 import java.util.UUID;
 
 /**
- * Unit test for simple App.
+ * Unit test for simple rpc.
  */
 public class RpcTest {
 

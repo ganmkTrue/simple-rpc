@@ -25,13 +25,8 @@ public class RemoteProxy implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Invoker invoker = new Invoker(method,args);
-        Message.Response response = invoker.doInvoke();
-        ByteString data = response.getData();
-        byte[] bytes = data.toByteArray();
-        if(bytes.length == 0){
-            return null;
-        }
-        return SerializationUtils.deserialize(bytes);
+
+        return invoker.doInvoke().get();
     }
 
 
