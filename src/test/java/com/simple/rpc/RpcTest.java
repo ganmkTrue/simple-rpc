@@ -96,12 +96,22 @@ public class RpcTest {
                 .build();
 
         Class<?>[] parameterTypes = SerializationUtils.deserialize(request.getRequest().getParameterTypes().toByteArray());
-        System.out.println(parameterTypes);
 
         Object[] deParameters = SerializationUtils.deserialize(request.getRequest().getParameters().toByteArray());
-        System.out.println(deParameters);
 
+    }
 
+    @Test
+    public void rpcTest() {
+        ServerConfig serverConfig =  new ServerConfig.Builder()
+                .host("127.0.0.1")
+                .port(2181)
+                .applicationPort(8899)
+                .build();
+        ApplicationStart applicationStart = new ApplicationStart(serverConfig);
+        applicationStart.run(new String[]{"com.simple.rpc.test"});
+        ServiceB bean = DefaultBeanFactory.getInstance().getBean(ServiceB.class);
+        bean.say();
     }
 
 }

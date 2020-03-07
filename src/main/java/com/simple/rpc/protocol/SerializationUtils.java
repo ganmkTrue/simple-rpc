@@ -15,7 +15,7 @@ import java.io.Serializable;
  */
 public class SerializationUtils {
 
-    public static byte[] serialize(Serializable object) {
+    public static byte[] serialize(Object object) {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
         ObjectOutputStream oos = null;

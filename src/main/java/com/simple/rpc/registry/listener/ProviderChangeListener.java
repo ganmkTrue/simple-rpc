@@ -30,15 +30,15 @@ public class ProviderChangeListener implements PathChildrenCacheListener {
         ChildData data = event.getData();
         String path = data.getPath();
         String[] split = path.split("/");
-        String host = split[split.length - 1];
+        String url = split[split.length - 1];
         switch (event.getType()) {
             case CHILD_ADDED:
                 ProviderCache.add(providerName,path);
-                logger.info("service : {} registry remote from : {}",providerName,host);
+                logger.info("service : {} registry remote from : {}",providerName,url);
                 break;
             case CHILD_REMOVED:
                 ProviderCache.reomve(providerName,path);
-                logger.info("service : {} closed  from : {}",providerName,host);
+                logger.info("service : {} closed  from : {}",providerName,url);
                 break;
             default:
                 break;

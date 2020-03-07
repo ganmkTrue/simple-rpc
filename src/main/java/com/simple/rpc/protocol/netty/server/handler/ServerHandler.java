@@ -7,7 +7,6 @@ import com.simple.rpc.protocol.Message;
 import com.simple.rpc.protocol.SerializationUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-
 import java.lang.reflect.Method;
 
 public class ServerHandler extends SimpleChannelInboundHandler<Message.RpcMessage> {
@@ -22,23 +21,39 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message.RpcMessag
         Class<?> clazz = Class.forName(className);
 
         Object service = beanFactory.getBean(clazz);
-        Class<?>[] parameterTypes = SerializationUtils.deserialize(request.getParameterTypes().toByteArray());
-        Object[] parameters = SerializationUtils.deserialize(request.getParameters().toByteArray());
+
+        Class<?>[] parameterTypes = getParameterTypes(request.getParameterTypes().toByteArray());
+        Object[] parameters = getParameterTypes(request.getParameters().toByteArray());
         String methodName = request.getMethodName();
         Method method = clazz.getMethod(methodName, parameterTypes);
 
         Object invoke = method.invoke(service, parameters);
 
         byte[] data = new byte[0];
-        if(invoke == null){
-
+        if(!"void".equals(method.getReturnType().getName())){
+            data = SerializationUtils.serialize(invoke);
         }
 
         Message.RpcMessage rpcMessage = Message.RpcMessage.newBuilder().setDateType(Message.RpcMessage.Datatype.Response)
-                .setResponse(Message.Response.newBuilder().setId(request.getId()).setData(ByteString.copyFrom("你好".getBytes()))
+                .setResponse(Message.Response.newBuilder().setId(request.getId()).setData(ByteString.copyFrom(data))
                         .build()).build();
 
         ctx.writeAndFlush(rpcMessage);
     }
+
+    private Class<?>[]  getParameterTypes(byte[] parameterTypes) {
+        if (parameterTypes == null || parameterTypes.length == 0) {
+            return null;
+        }
+        return SerializationUtils.deserialize(parameterTypes);
+    }
+
+    private Object[] getParameters(byte[] parameters) {
+        if (parameters == null || parameters.length == 0) {
+            return null;
+        }
+        return SerializationUtils.deserialize(parameters);
+    }
+
 
 }

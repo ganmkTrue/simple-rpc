@@ -27,7 +27,7 @@ public class ZooKeeperRegistry implements RemoteRegistry {
 
     private String consumers = "consumers";
 
-    private String ip = "127.0.0.1:10000";
+    private String url ;
 
 
 
@@ -44,6 +44,7 @@ public class ZooKeeperRegistry implements RemoteRegistry {
 
     private ZooKeeperRegistry(ServerConfig serverConfig) {
         zkClient = new ZkClient(serverConfig.getHost(), serverConfig.getPort());
+        url = serverConfig.getHost()+":"+serverConfig.getApplicationPort();
     }
 
 
@@ -54,7 +55,7 @@ public class ZooKeeperRegistry implements RemoteRegistry {
         try {
             zkClient.createPersistentNodeIfAbsent(name);
             zkClient.createPersistentNodeIfAbsent(name + "/" + providers);
-            zkClient.createEphemeralNodeIfAbsent(name + "/" + providers + "/" + ip);
+            zkClient.createEphemeralNodeIfAbsent(name + "/" + providers + "/" + url);
         } catch (Exception e) {
             logger.error("provide : {} registry remote fail",name,e);
         }
@@ -65,7 +66,7 @@ public class ZooKeeperRegistry implements RemoteRegistry {
 
         try {
             zkClient.createPersistentNodeIfAbsent("/"+service.getName() + "/" + consumers);
-            zkClient.createEphemeralNodeIfAbsent("/"+service.getName() + "/" + consumers + "/" + ip);
+            zkClient.createEphemeralNodeIfAbsent("/"+service.getName() + "/" + consumers + "/" + url);
             logger.info("subscriber service : {} path : {}",service.getName(),"/"+service.getName() + "/" + providers);
             PathChildrenCache pathChildrenCache = zkClient
                     .createPathChildrenCacheIfNotExists("/"+service.getName() + "/" + providers);

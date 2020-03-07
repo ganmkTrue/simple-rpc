@@ -8,8 +8,8 @@ public class ServiceAImpl implements ServiceA {
     private String name = "a";
 
     @Override
-    public void say() {
-        System.out.println("我是A");
+    public String say() {
+        return "ni hao wo shi "+name;
     }
 
     public void testMessage(String name,Integer num) {

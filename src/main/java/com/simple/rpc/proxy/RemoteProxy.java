@@ -4,7 +4,6 @@ import com.google.protobuf.ByteString;
 import com.simple.rpc.protocol.Message;
 import com.simple.rpc.protocol.SerializationUtils;
 import com.simple.rpc.protocol.invoke.Invoker;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 

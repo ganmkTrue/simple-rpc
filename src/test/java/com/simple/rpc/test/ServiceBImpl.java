@@ -12,7 +12,6 @@ public class ServiceBImpl implements ServiceB {
 
     @Override
     public void say() {
-        serviceA.say();
-        System.out.println("我是B");
+        System.out.println(serviceA.say());
     }
 }
