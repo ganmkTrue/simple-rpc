@@ -33,7 +33,7 @@ public class ServerConfig {
         return host;
     }
 
-    public void setHost(String host) {
+    private void setHost(String host) {
         this.host = host;
     }
 
@@ -41,7 +41,7 @@ public class ServerConfig {
         return port;
     }
 
-    public void setPort(int port) {
+    private void setPort(int port) {
         this.port = port;
     }
 
@@ -49,7 +49,7 @@ public class ServerConfig {
         return applicationPort;
     }
 
-    public void setApplicationPort(int applicationPort) {
+    private void setApplicationPort(int applicationPort) {
         this.applicationPort = applicationPort;
     }
 

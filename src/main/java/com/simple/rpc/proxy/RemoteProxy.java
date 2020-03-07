@@ -1,5 +1,10 @@
 package com.simple.rpc.proxy;
 
+import com.google.protobuf.ByteString;
+import com.simple.rpc.protocol.Message;
+import com.simple.rpc.protocol.SerializationUtils;
+import com.simple.rpc.protocol.invoke.Invoker;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
@@ -20,8 +25,14 @@ public class RemoteProxy implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        System.out.println("方法："+method.getName()+"已经动态增强");
-        return null;
+        Invoker invoker = new Invoker(method,args);
+        Message.Response response = invoker.doInvoke();
+        ByteString data = response.getData();
+        byte[] bytes = data.toByteArray();
+        if(bytes.length == 0){
+            return null;
+        }
+        return SerializationUtils.deserialize(bytes);
     }
 
 

@@ -1,0 +1,32 @@
+syntax = "proto2";
+package com.simple.rpc.protocol;
+option java_outer_classname = "Message";
+
+message RpcMessage {
+
+    enum Datatype {
+        Request = 1;
+        Response = 2;
+    }
+    required Datatype date_type = 1;
+
+    oneof dataBody{
+        Request request = 2;
+        Response response = 3;
+    }
+
+}
+
+message Request {
+    required string id = 1;
+    required string class_name = 2;
+    required string method_name = 3;
+    required bytes parameter_types = 4;
+    required bytes parameters = 5;
+}
+
+message Response {
+    required string id = 1;
+    required bytes data = 2;
+
+}

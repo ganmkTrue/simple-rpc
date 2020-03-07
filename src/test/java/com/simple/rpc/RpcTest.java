@@ -1,18 +1,25 @@
 package com.simple.rpc;
 
 
+import com.google.protobuf.ByteString;
 import com.simple.rpc.config.ServerConfig;
 import com.simple.rpc.ioc.DefaultBeanFactory;
+import com.simple.rpc.protocol.Message;
+import com.simple.rpc.protocol.SerializationUtils;
 import com.simple.rpc.registry.ZkClient;
+import com.simple.rpc.test.ServiceAImpl;
 import com.simple.rpc.test.ServiceB;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.junit.Test;
 
+import java.lang.reflect.Method;
+import java.util.UUID;
+
 /**
  * Unit test for simple App.
  */
-public class AppTest {
+public class RpcTest {
 
 
 
@@ -64,6 +71,36 @@ public class AppTest {
         for (int i = 0; i < 3; i++) {
             zkClient.delete(path + "/id-" + i);
         }
+
+    }
+
+    @Test
+    public void protobufTest() throws Exception{
+        ServiceAImpl serviceA = new ServiceAImpl();
+        Method method = serviceA.getClass().getMethod("testMessage", String.class,Integer.class);
+        Method say = serviceA.getClass().getMethod("say");
+        Class<?>[] parameterTypes1 = say.getParameterTypes();
+        Class<?> returnType = say.getReturnType();
+        System.out.println(parameterTypes1.length);
+        System.out.println(returnType.getName());
+         Object[] parameters = new Object[]{"ni hao",Integer.valueOf(5)};
+        Message.RpcMessage request = Message.RpcMessage.newBuilder()
+                .setDateType(Message.RpcMessage.Datatype.Request)
+                .setRequest(Message.Request.newBuilder()
+                        .setId(UUID.randomUUID().toString())
+                        .setClassName(serviceA.getClass().getName())
+                        .setMethodName(method.getName())
+                        .setParameterTypes(ByteString.copyFrom(SerializationUtils.serialize(method.getParameterTypes())))
+                        .setParameters(ByteString.copyFrom(SerializationUtils.serialize(parameters)))
+                        .build())
+                .build();
+
+        Class<?>[] parameterTypes = SerializationUtils.deserialize(request.getRequest().getParameterTypes().toByteArray());
+        System.out.println(parameterTypes);
+
+        Object[] deParameters = SerializationUtils.deserialize(request.getRequest().getParameters().toByteArray());
+        System.out.println(deParameters);
+
 
     }
 

@@ -7,7 +7,6 @@ public interface BeanFactory {
      * @param requiredType
      * @param <T>
      * @return
-     * @throws Exception
      */
     <T> T getBean(Class<T> requiredType);
 

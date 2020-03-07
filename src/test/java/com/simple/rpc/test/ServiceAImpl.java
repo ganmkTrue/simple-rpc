@@ -12,4 +12,8 @@ public class ServiceAImpl implements ServiceA {
         System.out.println("我是A");
     }
 
+    public void testMessage(String name,Integer num) {
+        System.out.println("testMessage:"+name+num);
+    }
+
 }
