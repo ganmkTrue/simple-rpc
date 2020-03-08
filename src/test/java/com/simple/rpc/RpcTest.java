@@ -9,6 +9,7 @@ import com.simple.rpc.protocol.SerializationUtils;
 import com.simple.rpc.registry.ZkClient;
 import com.simple.rpc.test.ServiceAImpl;
 import com.simple.rpc.test.ServiceB;
+import com.simple.rpc.test.ServiceC;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.junit.Test;
@@ -110,8 +111,10 @@ public class RpcTest {
                 .build();
         ApplicationStart applicationStart = new ApplicationStart(serverConfig);
         applicationStart.run(new String[]{"com.simple.rpc.test"});
-        ServiceB bean = DefaultBeanFactory.getInstance().getBean(ServiceB.class);
-        bean.say();
+        ServiceB serviceB = DefaultBeanFactory.getInstance().getBean(ServiceB.class);
+        ServiceC serviceC = DefaultBeanFactory.getInstance().getBean(ServiceC.class);
+        serviceB.say();
+        System.out.println(serviceC.getByRemote());
     }
 
 }

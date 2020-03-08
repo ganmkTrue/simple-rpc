@@ -16,4 +16,12 @@ public class ServiceAImpl implements ServiceA {
         System.out.println("testMessage:"+name+num);
     }
 
+    @Override
+    public Person getPerson() {
+        Person person = new Person();
+        person.setAge(23);
+        person.setName("zhangsan");
+        person.setSex("man");
+        return person;
+    }
 }
