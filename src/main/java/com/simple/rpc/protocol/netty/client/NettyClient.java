@@ -8,6 +8,11 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
+/**
+ * @author yanhao
+ * @date 2020/3/7
+ * @description:
+ */
 public class NettyClient {
 
     private String host;
@@ -23,9 +28,6 @@ public class NettyClient {
     }
 
     public void start() {
-
-
-
         bootstrap
                 .group(workerGroup)
                 .channel(NioSocketChannel.class)

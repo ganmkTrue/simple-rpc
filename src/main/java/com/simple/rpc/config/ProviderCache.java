@@ -17,7 +17,7 @@ public class ProviderCache {
 
 
 
-    public static void add(String providerName,String value){
+    public static void add(String providerName,String url){
         boolean containsKey = provider.containsKey(providerName);
         if(!containsKey){
             synchronized (ProviderCache.class){
@@ -26,11 +26,11 @@ public class ProviderCache {
                 }
             }
         }
-        provider.get(providerName).add(value);
+        provider.get(providerName).add(url);
     }
 
-    public static void reomve(String providerName,String value){
-        get(providerName).remove(value);
+    public static void remove(String providerName,String url){
+        get(providerName).remove(url);
     }
 
 

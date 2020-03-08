@@ -37,7 +37,7 @@ public class ProviderChangeListener implements PathChildrenCacheListener {
                 logger.info("service : {} registry remote from : {}",providerName,url);
                 break;
             case CHILD_REMOVED:
-                ProviderCache.reomve(providerName,path);
+                ProviderCache.remove(providerName,path);
                 logger.info("service : {} closed  from : {}",providerName,url);
                 break;
             default:

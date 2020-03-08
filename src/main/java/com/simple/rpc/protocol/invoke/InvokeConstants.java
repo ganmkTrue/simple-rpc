@@ -1,10 +1,13 @@
 package com.simple.rpc.protocol.invoke;
 
-import com.simple.rpc.protocol.invoke.DefaultFuture;
-import com.simple.rpc.protocol.invoke.ResponseFuture;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * @author yanhao
+ * @date 2020/3/7
+ * @description:
+ */
 public class InvokeConstants {
 
     private static final Map<String, DefaultFuture> FUTURES = new ConcurrentHashMap<>();

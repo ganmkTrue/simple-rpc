@@ -4,7 +4,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * @author yanhao
+ * @date 2020/3/3
+ * @description:
+ */
 public class DefaultBeanFactory implements BeanFactory {
+
+
 
     private final Map<Class<?>, Object> beanContainer = new ConcurrentHashMap<>(64);
 
@@ -20,7 +27,7 @@ public class DefaultBeanFactory implements BeanFactory {
     public <T> T getBean(Class<T> requiredType)  {
         Object bean = beanContainer.get(requiredType);
         if (bean == null){
-            //异常
+            throw new RuntimeException("can't find class : "+requiredType.getName());
         }
         return (T) bean;
     }

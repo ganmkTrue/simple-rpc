@@ -2,6 +2,8 @@ package com.simple.rpc.registry;
 
 import com.simple.rpc.config.ServerConfig;
 import com.simple.rpc.registry.listener.ProviderChangeListener;
+
+import java.util.List;
 import java.util.Objects;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
@@ -58,6 +60,16 @@ public class ZooKeeperRegistry implements RemoteRegistry {
             zkClient.createEphemeralNodeIfAbsent(name + "/" + providers + "/" + url);
         } catch (Exception e) {
             logger.error("provide : {} registry remote fail",name,e);
+        }
+    }
+
+    @Override
+    public void batchRegistry(List<Class<?>> services) {
+        if (services == null || services.size() == 0){
+            return;
+        }
+        for(Class<?> service :services){
+            registry(service);
         }
     }
 

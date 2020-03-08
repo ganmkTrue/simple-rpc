@@ -1,6 +1,10 @@
 package com.simple.rpc.protocol.invoke;
 
-
+/**
+ * @author yanhao
+ * @date 2020/3/7
+ * @description:
+ */
 public interface ResponseFuture  {
 
 

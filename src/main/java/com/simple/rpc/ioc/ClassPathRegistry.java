@@ -6,6 +6,9 @@ import com.simple.rpc.proxy.RemoteProxyFactory;
 
 import com.simple.rpc.registry.RemoteRegistry;
 import com.simple.rpc.registry.ZooKeeperRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -24,11 +27,13 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ClassPathRegistry implements LocalRegistry {
 
-    private final Map<Class<?>, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(64);
+    private static final Logger logger = LoggerFactory.getLogger(ClassPathRegistry.class);
 
     private RemoteRegistry remoteRegistry;
 
-    public ClassPathRegistry(RemoteRegistry remoteRegistry){
+    private List<Class<?>> clazzs = new ArrayList<>();
+
+    public ClassPathRegistry(RemoteRegistry remoteRegistry) {
         this.remoteRegistry = remoteRegistry;
     }
 
@@ -49,25 +54,17 @@ public class ClassPathRegistry implements LocalRegistry {
             resourceUrls = cl != null ? cl.getResources(path)
                     : ClassLoader.getSystemResources(path);
         } catch (IOException e) {
-            //异常
+            logger.error("scan package: {} error ",basePackage,e);
         }
 
-        List<Class<?>> clazzs = new ArrayList<>();
         while (resourceUrls.hasMoreElements()) {
             URL url = resourceUrls.nextElement();
             addClass(clazzs, url.getPath(), basePackage);
         }
 
-        clazzs.stream()
-                .filter(this::filterByAnnotation)
-                .forEach(ele -> {
-                    BeanDefinition beanDefinition = new BeanDefinition();
-                    beanDefinition.setClassName(ele.getName());
-                    beanDefinitionMap.put(ele, beanDefinition);
-                });
     }
 
-    private boolean filterByAnnotation(Class<?> clazz) {
+    private boolean isProvider(Class<?> clazz) {
         return clazz.getAnnotation(RpcService.class) != null;
     }
 
@@ -87,9 +84,11 @@ public class ClassPathRegistry implements LocalRegistry {
                 try {
                     Class<?> aClass = Thread.currentThread().getContextClassLoader()
                             .loadClass(basePackage + "." + className);
-                    clazzs.add(aClass);
+                    if (!aClass.isInterface()) {
+                        clazzs.add(aClass);
+                    }
                 } catch (ClassNotFoundException e) {
-                    //异常
+                    logger.error("scan package: {} error",e);
                 }
             }
         }
@@ -98,23 +97,32 @@ public class ClassPathRegistry implements LocalRegistry {
 
     @Override
     public void register(BeanFactory beanFactory) {
-        if (beanDefinitionMap.size() == 0) {
+        if (clazzs.size() == 0) {
             return;
         }
-        beanDefinitionMap.forEach((clazz, beanDefinition) -> {
+        for (Class<?> clazz : clazzs) {
             Object bean = createBean(clazz);
             Class<?>[] interfaces = clazz.getInterfaces();
-            if(interfaces==null||interfaces.length == 0){
+            if (interfaces == null || interfaces.length == 0) {
                 beanFactory.registerBean(clazz, bean);
-                remoteRegistry.registry(clazz);
-            }else {
-                for (Class<?> inter: interfaces){
+            } else {
+                for (Class<?> inter : interfaces) {
                     beanFactory.registerBean(inter, bean);
-                    remoteRegistry.registry(inter);
                 }
             }
-        });
-
+        }
+        for (Class<?> clazz : clazzs) {
+            Class<?>[] interfaces = clazz.getInterfaces();
+            if (isProvider(clazz)) {
+                if (interfaces == null || interfaces.length == 0) {
+                    remoteRegistry.registry(clazz);
+                } else {
+                    for (Class<?> inter : interfaces) {
+                        remoteRegistry.registry(inter);
+                    }
+                }
+            }
+        }
     }
 
     private Object createBean(Class<?> clazz) {
@@ -128,16 +136,17 @@ public class ClassPathRegistry implements LocalRegistry {
                 if (annotation != null) {
                     if (!Modifier.isStatic(field.getModifiers())) {
                         field.setAccessible(true);
-                        //代理对象
+                        //create remote proxy
                         Object proxy = getRemoteProxy(field.getType());
                         field.set(bean, proxy);
-                        remoteRegistry.subscriberService(field.getType(),clazz);
+                        remoteRegistry.subscriberService(field.getType(), clazz);
                     }
                 }
             }
 
         } catch (InstantiationException | IllegalAccessException e) {
-            //异常
+            logger.error("create bean {} fail ", clazz.getName(), e);
+            throw new RuntimeException(e);
         }
         return bean;
     }

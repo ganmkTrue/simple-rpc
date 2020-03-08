@@ -1,5 +1,11 @@
 package com.simple.rpc.ioc;
 
+
+/**
+ * @author yanhao
+ * @date 2020/3/3
+ * @description:
+ */
 public interface BeanFactory {
 
     /**

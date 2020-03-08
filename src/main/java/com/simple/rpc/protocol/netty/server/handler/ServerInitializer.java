@@ -1,6 +1,6 @@
 package com.simple.rpc.protocol.netty.server.handler;
 
-import com.simple.rpc.protocol.Message;
+import com.simple.rpc.protocol.netty.Message;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -9,6 +9,11 @@ import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 
+/**
+ * @author yanhao
+ * @date 2020/3/7
+ * @description:
+ */
 public class ServerInitializer extends ChannelInitializer<SocketChannel> {
 
     @Override

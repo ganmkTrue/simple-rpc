@@ -3,22 +3,33 @@ package com.simple.rpc.protocol.netty.server.handler;
 import com.google.protobuf.ByteString;
 import com.simple.rpc.ioc.BeanFactory;
 import com.simple.rpc.ioc.DefaultBeanFactory;
-import com.simple.rpc.protocol.Message;
+import com.simple.rpc.protocol.netty.Message;
 import com.simple.rpc.protocol.SerializationUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-
+import io.netty.util.concurrent.DefaultThreadFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
+/**
+ * @author yanhao
+ * @date 2020/3/7
+ * @description:
+ */
 public class ServerHandler extends SimpleChannelInboundHandler<Message.RpcMessage> {
 
+    private static final Logger logger = LoggerFactory.getLogger(ServerHandler.class);
 
     private BeanFactory beanFactory = DefaultBeanFactory.getInstance();
 
-    private ExecutorService executorService = Executors.newFixedThreadPool(4);
+    private ExecutorService executorService = new ThreadPoolExecutor(
+            Runtime.getRuntime().availableProcessors() * 2,
+            Runtime.getRuntime().availableProcessors() * 5,
+            60, TimeUnit.SECONDS, new LinkedBlockingDeque<>(10000),
+            new DefaultThreadFactory("simple-rpc", false));
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Message.RpcMessage msg) throws Exception {
@@ -48,13 +59,14 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message.RpcMessag
                             Message.Response.newBuilder()
                                     .setId(request.getId())
                                     .setData(ByteString.copyFrom(data))
-                            .build()
+                                    .build()
                     ).build();
 
             ctx.writeAndFlush(rpcMessage);
 
         } catch (ClassNotFoundException | NoSuchMethodException | SecurityException
                 | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+
             throw new RuntimeException(e);
         }
 

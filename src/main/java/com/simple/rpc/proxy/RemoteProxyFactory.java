@@ -2,6 +2,11 @@ package com.simple.rpc.proxy;
 
 import java.lang.reflect.Proxy;
 
+/**
+ * @author yanhao
+ * @date 2020/3/4
+ * @description:
+ */
 public class RemoteProxyFactory {
 
 

@@ -1,6 +1,9 @@
 package com.simple.rpc.protocol;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -14,6 +17,7 @@ import java.io.Serializable;
  * @description:
  */
 public class SerializationUtils {
+    private static final Logger logger = LoggerFactory.getLogger(SerializationUtils.class);
 
     public static byte[] serialize(Object object) {
 

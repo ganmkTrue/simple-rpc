@@ -4,7 +4,7 @@ package com.simple.rpc;
 import com.google.protobuf.ByteString;
 import com.simple.rpc.config.ServerConfig;
 import com.simple.rpc.ioc.DefaultBeanFactory;
-import com.simple.rpc.protocol.Message;
+import com.simple.rpc.protocol.netty.Message;
 import com.simple.rpc.protocol.SerializationUtils;
 import com.simple.rpc.registry.ZkClient;
 import com.simple.rpc.test.ServiceAImpl;

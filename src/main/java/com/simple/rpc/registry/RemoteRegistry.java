@@ -1,5 +1,7 @@
 package com.simple.rpc.registry;
 
+import java.util.List;
+
 /**
  * @author yanhao
  * @date 2020/3/5
@@ -12,6 +14,13 @@ public interface RemoteRegistry {
      * @param service
      */
     void registry(Class<?> service);
+
+
+    /**
+     * 批量服务注册到远程中心
+     * @param services
+     */
+    void batchRegistry(List<Class<?>> services);
 
 
     /**

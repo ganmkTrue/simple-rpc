@@ -1,23 +1,33 @@
 package com.simple.rpc.protocol.netty.server;
 
+import com.simple.rpc.config.ServerConstants;
+import com.simple.rpc.ioc.BeanFactory;
+import com.simple.rpc.ioc.DefaultBeanFactory;
 import com.simple.rpc.protocol.netty.server.handler.ServerInitializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
+/**
+ * @author yanhao
+ * @date 2020/3/7
+ * @description:
+ */
 public class NettyServer {
+
+    private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
 
     private int port;
 
-    private ChannelHandler childHandler;
-
-    public NettyServer(int port,ChannelHandler childHandler) {
-        this.port = port;
-        this.childHandler = childHandler;
+    public NettyServer() {
+        BeanFactory beanFactory = DefaultBeanFactory.getInstance();
+        this.port = beanFactory.getBean(ServerConstants.class).getApplicationPort();
     }
 
     public void start() {
@@ -34,9 +44,9 @@ public class NettyServer {
                 .childHandler(new ServerInitializer())
                 .bind(port).addListener(future -> {
             if (future.isSuccess()) {
-                System.out.println(new Date() + ": 端口[" + port + "]绑定成功!");
+                logger.info("{} : 服务启动端口 [{}] 绑定成功",new Date(),port);
             } else {
-                System.err.println("端口[" + port + "]绑定失败!");
+                logger.error("{} : 端口 [{}] 绑定失败",new Date(),port);
             }
         });
         ;
