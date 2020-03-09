@@ -13,7 +13,7 @@ public class DefaultBeanFactory implements BeanFactory {
 
 
 
-    private final Map<Class<?>, Object> beanContainer = new ConcurrentHashMap<>(64);
+    private final Map<String, Object> beanContainer = new ConcurrentHashMap<>(64);
 
 
 
@@ -23,20 +23,27 @@ public class DefaultBeanFactory implements BeanFactory {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getBean(Class<T> requiredType)  {
-        Object bean = beanContainer.get(requiredType);
+        return (T) getBeanByName(requiredType.getName());
+    }
+
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T getBeanByName(String className) {
+        Object bean = beanContainer.get(className);
         if (bean == null){
-            throw new RuntimeException("can't find class : "+requiredType.getName());
+            throw new RuntimeException("can't find class : "+className);
         }
         return (T) bean;
     }
 
-
     @Override
     public void registerBean(Class type, Object bean) {
         Objects.requireNonNull(bean);
-        beanContainer.put(type,bean);
+        beanContainer.put(type.getName(),bean);
     }
 
     private static class Holder{

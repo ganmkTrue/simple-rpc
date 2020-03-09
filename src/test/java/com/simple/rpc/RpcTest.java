@@ -46,7 +46,6 @@ public class RpcTest {
         zkClient.createPersistentNodeIfAbsent(path);
 
         PathChildrenCache pathChildrenCache = zkClient.createPathChildrenCacheIfNotExists(path);
-        pathChildrenCache.start();
         zkClient.addPathChildrenCacheListener(pathChildrenCache,
                 (client, event) -> {
                     ChildData data = event.getData();
@@ -67,11 +66,14 @@ public class RpcTest {
         for (int i = 0; i < 3; i++) {
             zkClient.createEphemeralNode(path + "/id-" + i);
         }
-
+        System.out.println(zkClient.getChildren(path));
+        System.out.println(zkClient.getChildren(path+"/"+"445"));
         Thread.sleep(1000);
         for (int i = 0; i < 3; i++) {
             zkClient.delete(path + "/id-" + i);
         }
+
+        ///com.simple.rpc.test.ServiceA/providers
 
     }
 
@@ -107,7 +109,7 @@ public class RpcTest {
         ServerConfig serverConfig =  new ServerConfig.Builder()
                 .host("127.0.0.1")
                 .port(2181)
-                .applicationPort(8899)
+                .applicationPort(9006)
                 .build();
         ApplicationStart applicationStart = new ApplicationStart(serverConfig);
         applicationStart.run(new String[]{"com.simple.rpc.test"});

@@ -1,10 +1,13 @@
 package com.simple.rpc.registry;
 
+import com.simple.rpc.config.ProviderCache;
 import com.simple.rpc.config.ServerConfig;
 import com.simple.rpc.registry.listener.ProviderChangeListener;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import javax.xml.bind.Element;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.slf4j.Logger;
@@ -77,9 +80,11 @@ public class ZooKeeperRegistry implements RemoteRegistry {
     public void subscriberService(Class<?> service, Class<?> consumer) {
 
         try {
-            zkClient.createPersistentNodeIfAbsent("/"+service.getName() + "/" + consumers);
-            zkClient.createEphemeralNodeIfAbsent("/"+service.getName() + "/" + consumers + "/" + url);
-            logger.info("subscriber service : {} path : {}",service.getName(),"/"+service.getName() + "/" + providers);
+            String path = "/" + service.getName();
+            zkClient.createPersistentNodeIfAbsent(path);
+            zkClient.createPersistentNodeIfAbsent(path+ "/" + consumers);
+            zkClient.createEphemeralNodeIfAbsent(path + "/" + consumers + "/" + url);
+            logger.info("subscriber service : {} path : {}",service.getName(),path + "/" + providers);
             PathChildrenCache pathChildrenCache = zkClient
                     .createPathChildrenCacheIfNotExists("/"+service.getName() + "/" + providers);
             zkClient.addPathChildrenCacheListener(pathChildrenCache, new ProviderChangeListener(service.getName()));
@@ -87,6 +92,23 @@ public class ZooKeeperRegistry implements RemoteRegistry {
             logger.error("consumer : {} subscriber provide : {}  fail",consumer.getName(),service.getName(),e);
         }
 
+    }
 
+    @Override
+    public void pullProvider(Class<?> service) {
+        String path = "/" + service.getName()+"/"+providers;
+        try {
+            if (!zkClient.checkExists(path)){
+                return;
+            }
+            List<String> children = zkClient.getChildren(path);
+            if(children != null && children.size() > 0){
+                children = children.stream().map(c->path+ "/"+c).collect(Collectors.toList());
+                ProviderCache.batchAdd(service.getName(),children);
+            }
+
+        } catch (Exception e) {
+            logger.error("pullProvider : {}  fail",service.getName(),e);
+        }
     }
 }

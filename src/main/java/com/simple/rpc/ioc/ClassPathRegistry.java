@@ -105,24 +105,19 @@ public class ClassPathRegistry implements LocalRegistry {
             Class<?>[] interfaces = clazz.getInterfaces();
             if (interfaces == null || interfaces.length == 0) {
                 beanFactory.registerBean(clazz, bean);
+                if (isProvider(clazz)) {
+                    remoteRegistry.registry(clazz);
+                }
             } else {
                 for (Class<?> inter : interfaces) {
+                    if (isProvider(clazz)) {
+                        remoteRegistry.registry(inter);
+                    }
                     beanFactory.registerBean(inter, bean);
                 }
             }
         }
-        for (Class<?> clazz : clazzs) {
-            Class<?>[] interfaces = clazz.getInterfaces();
-            if (isProvider(clazz)) {
-                if (interfaces == null || interfaces.length == 0) {
-                    remoteRegistry.registry(clazz);
-                } else {
-                    for (Class<?> inter : interfaces) {
-                        remoteRegistry.registry(inter);
-                    }
-                }
-            }
-        }
+
     }
 
     private Object createBean(Class<?> clazz) {
@@ -139,6 +134,7 @@ public class ClassPathRegistry implements LocalRegistry {
                         //create remote proxy
                         Object proxy = getRemoteProxy(field.getType());
                         field.set(bean, proxy);
+                        remoteRegistry.pullProvider(field.getType());
                         remoteRegistry.subscriberService(field.getType(), clazz);
                     }
                 }

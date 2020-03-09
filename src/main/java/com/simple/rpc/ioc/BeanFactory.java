@@ -17,6 +17,14 @@ public interface BeanFactory {
     <T> T getBean(Class<T> requiredType);
 
     /**
+     * 从容器中获取bean
+     * @param className
+     * @param <T>
+     * @return
+     */
+    <T> T getBeanByName(String className);
+
+    /**
      * 将bean注入到容器中
      * @param type
      * @param bean

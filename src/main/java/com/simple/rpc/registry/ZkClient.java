@@ -1,5 +1,6 @@
 package com.simple.rpc.registry;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.curator.RetryPolicy;
@@ -126,5 +127,15 @@ public class ZkClient {
      */
     public byte[] getData(String path) throws Exception {
         return client.getData().forPath(path);
+    }
+
+    /**
+     * 获取某个目录的子节点
+     * @param path
+     * @return
+     * @throws Exception
+     */
+    public List<String> getChildren(String path)throws Exception{
+        return client.getChildren().forPath(path);
     }
 }

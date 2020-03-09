@@ -30,5 +30,11 @@ public interface RemoteRegistry {
      */
     void subscriberService(Class<?> service,Class<?> consumer);
 
+    /**
+     * 从远处拉取服务到本地缓存
+     * @param service
+     */
+    void pullProvider(Class<?> service);
+
 
 }

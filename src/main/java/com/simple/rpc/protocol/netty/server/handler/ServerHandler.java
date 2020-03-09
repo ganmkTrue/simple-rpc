@@ -40,12 +40,11 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message.RpcMessag
         try {
             Message.Request request = msg.getRequest();
             String className = request.getClassName();
-            Class<?> clazz = Class.forName(className);
-            Object service = beanFactory.getBean(clazz);
+            Object service = beanFactory.getBeanByName(className);
             Class<?>[] parameterTypes = getParameterTypes(request.getParameterTypes().toByteArray());
             Object[] parameters = getParameters(request.getParameters().toByteArray());
             String methodName = request.getMethodName();
-            Method method = clazz.getMethod(methodName, parameterTypes);
+            Method method = service.getClass().getMethod(methodName, parameterTypes);
             Object invoke = method.invoke(service, parameters);
 
             byte[] data = new byte[0];
@@ -64,7 +63,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<Message.RpcMessag
 
             ctx.writeAndFlush(rpcMessage);
 
-        } catch (ClassNotFoundException | NoSuchMethodException | SecurityException
+        } catch ( NoSuchMethodException | SecurityException
                 | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 
             throw new RuntimeException(e);
