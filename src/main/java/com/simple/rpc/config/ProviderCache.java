@@ -38,6 +38,8 @@ public class ProviderCache {
                     provider.put(providerName,new HashSet<>());
                 }
             }
+        }else {
+            return;
         }
         provider.get(providerName).addAll(urls);
     }
